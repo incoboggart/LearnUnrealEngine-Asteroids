@@ -1,3 +1,5 @@
 Intermediate/
 .vs/
 Binaries/
+Saved/
+*.VC.opendb

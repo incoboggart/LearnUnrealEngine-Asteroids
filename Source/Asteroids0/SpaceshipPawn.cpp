@@ -1,50 +1,35 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 
 #include "Asteroids0.h"
-#include "Asteroids0Pawn.h"
+#include "SpaceshipPawn.h"
 #include "Asteroids0Projectile.h"
 #include "TimerManager.h"
 
-const FName AAsteroids0Pawn::MoveForwardBinding("MoveForward");
-const FName AAsteroids0Pawn::MoveRightBinding("MoveRight");
-const FName AAsteroids0Pawn::FireForwardBinding("FireForward");
+const FName ASpaceshipPawn::MoveForwardBinding("MoveForward");
+const FName ASpaceshipPawn::MoveRightBinding("MoveRight");
+const FName ASpaceshipPawn::FireForwardBinding("FireForward");
 
-AAsteroids0Pawn::AAsteroids0Pawn()
+ASpaceshipPawn::ASpaceshipPawn()
 {	
-	//static ConstructorHelpers::FObjectFinder<UStaticMesh> ShipMesh(TEXT("/Game/TwinStick/Meshes/TwinStickUFO.TwinStickUFO"));
     auto shipMesh = _shipMesh.LoadSynchronous();
 	// Create the mesh component
-	ShipMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
-	RootComponent = ShipMeshComponent;
+    ShipMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShipMesh"));
 	ShipMeshComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
 	ShipMeshComponent->SetStaticMesh(shipMesh);
+
+    RootComponent = ShipMeshComponent;
 	
 	// Cache our sound effect
 	static ConstructorHelpers::FObjectFinder<USoundBase> FireAudio(TEXT("/Game/TwinStick/Audio/TwinStickFire.TwinStickFire"));
 	FireSound = FireAudio.Object;
-
-	// Create a camera boom...
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->bAbsoluteRotation = true; // Don't want arm to rotate when ship does
-	CameraBoom->TargetArmLength = 1200.f;
-	CameraBoom->RelativeRotation = FRotator(-80.f, 0.f, 0.f);
-	CameraBoom->bDoCollisionTest = false; // Don't want to pull camera in when it collides with level
-
-	// Create a camera...
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("TopDownCamera"));
-	CameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	CameraComponent->bUsePawnControlRotation = false;	// Camera does not rotate relative to arm
-
-	// Movement
-	MoveSpeed = 1000.0f;
+    _movementSpeed = 1000.f;
 	// Weapon
 	GunOffset = FVector(90.f, 0.f, 0.f);
 	FireRate = 0.1f;
 	bCanFire = true;
 }
 
-void AAsteroids0Pawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
+void ASpaceshipPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
 
@@ -54,7 +39,7 @@ void AAsteroids0Pawn::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAxis(FireForwardBinding);
 }
 
-void AAsteroids0Pawn::PostEditChangeProperty(FPropertyChangedEvent & e)
+void ASpaceshipPawn::PostEditChangeProperty(FPropertyChangedEvent & e)
 {
     Super::PostEditChangeProperty(e);
 
@@ -77,7 +62,7 @@ void AAsteroids0Pawn::PostEditChangeProperty(FPropertyChangedEvent & e)
     }
 }
 
-void AAsteroids0Pawn::Tick(float DeltaSeconds)
+void ASpaceshipPawn::Tick(float DeltaSeconds)
 {
     // Read input
     const float movementInput = GetInputAxisValue(MoveForwardBinding);
@@ -123,13 +108,13 @@ void AAsteroids0Pawn::Tick(float DeltaSeconds)
         }
 
         bCanFire = false;
-        World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &AAsteroids0Pawn::ShotTimerExpired, FireRate);
+        World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &ASpaceshipPawn::ShotTimerExpired, FireRate);
 
         bCanFire = false;
     }
 }
 
-void AAsteroids0Pawn::FireShot(FVector FireDirection)
+void ASpaceshipPawn::FireShot(FVector FireDirection)
 {
 	// If we it's ok to fire again
 	if (bCanFire == true)
@@ -149,7 +134,7 @@ void AAsteroids0Pawn::FireShot(FVector FireDirection)
 			}
 
 			bCanFire = false;
-			World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &AAsteroids0Pawn::ShotTimerExpired, FireRate);
+			World->GetTimerManager().SetTimer(TimerHandle_ShotTimerExpired, this, &ASpaceshipPawn::ShotTimerExpired, FireRate);
 
 			// try and play the sound if specified
 			if (FireSound != nullptr)
@@ -162,7 +147,7 @@ void AAsteroids0Pawn::FireShot(FVector FireDirection)
 	}
 }
 
-void AAsteroids0Pawn::ShotTimerExpired()
+void ASpaceshipPawn::ShotTimerExpired()
 {
 	bCanFire = true;
 }

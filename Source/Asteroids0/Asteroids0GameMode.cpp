@@ -2,11 +2,11 @@
 
 #include "Asteroids0.h"
 #include "Asteroids0GameMode.h"
-#include "Asteroids0Pawn.h"
+#include "SpaceshipPawn.h"
 
 AAsteroids0GameMode::AAsteroids0GameMode()
 {
 	// set default pawn class to our character class
-	DefaultPawnClass = AAsteroids0Pawn::StaticClass();
+	DefaultPawnClass = ASpaceshipPawn::StaticClass();
 }
 

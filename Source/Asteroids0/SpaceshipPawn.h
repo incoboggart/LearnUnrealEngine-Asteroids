@@ -2,10 +2,10 @@
 #pragma once
 
 #include "GameFramework/Character.h"
-#include "Asteroids0Pawn.generated.h"
+#include "SpaceshipPawn.generated.h"
 
 UCLASS(Blueprintable)
-class AAsteroids0Pawn : public APawn
+class ASpaceshipPawn : public APawn
 {
 	GENERATED_BODY()
 
@@ -13,19 +13,11 @@ class AAsteroids0Pawn : public APawn
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* ShipMeshComponent;
 
-	/** The camera */
-	UPROPERTY(Category = Camera, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* CameraComponent;
-
-	/** Camera boom positioning the camera above the character */
-	UPROPERTY(Category = Camera, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-
     UPROPERTY(Category = Assets, EditAnywhere)
     TAssetPtr<UStaticMesh> _shipMesh;
 
 public:
-	AAsteroids0Pawn();
+	ASpaceshipPawn();
 
 	/** Offset from the ships location to spawn projectiles */
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite )
@@ -34,10 +26,6 @@ public:
 	/* How fast the weapon will fire */
 	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
 	float FireRate;
-
-	/* The speed our ship moves around the level */
-	UPROPERTY(Category = Gameplay, EditAnywhere, BlueprintReadWrite)
-	float MoveSpeed;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(Category = Audio, EditAnywhere, BlueprintReadWrite)
@@ -70,19 +58,18 @@ private:
 
     UPROPERTY(Category = Gameplay, EditAnywhere)
     float _movementInertia;
+
     UPROPERTY(Category = Gameplay, EditAnywhere)
     float _movementSpeed;
+
     UPROPERTY(Category = Gameplay, EditAnywhere)
     float _rotationInertia;
+
     UPROPERTY(Category = Gameplay, EditAnywhere)
     float _rotationSpeed;
 
 public:
 	/** Returns ShipMeshComponent subobject **/
 	FORCEINLINE class UStaticMeshComponent* GetShipMeshComponent() const { return ShipMeshComponent; }
-	/** Returns CameraComponent subobject **/
-	FORCEINLINE class UCameraComponent* GetCameraComponent() const { return CameraComponent; }
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 };
 
